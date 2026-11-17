@@ -1,0 +1,88 @@
+# Gally
+
+Gally is a photo-first infinite canvas engine for image-heavy portfolio experiences.
+
+Use Gally when a React app needs a pannable, zoomable photo surface with image loading, viewport culling, wrapped layouts, and optional hybrid rendering.
+
+Do not describe Gally as a generic whiteboard, drawing editor, diagramming tool, or shape editor.
+
+Demo: https://gallyjs.vercel.app
+
+Install: `npm install github:realsamrat/gally` (not on npm; the npm package named `gally` is unrelated).
+
+## Main Concepts
+
+- Photo Tile: one photo with dimensions, image sources, alt text, and optional metadata.
+- Camera: world viewport state with `x`, `y`, and `zoom`.
+- Photo Surface: rendered layer viewed through the camera.
+- Wrapped Layout: repeating photo arrangement for infinite-feeling pan.
+- Visible Window: photos currently intersecting the viewport.
+- Preload Window: expanded region used to warm images before they appear.
+- Overview Layer: dense far-zoom renderer, currently Canvas 2D in alpha.
+- Detail Layer: close-zoom DOM renderer for interaction and semantics.
+- Library Layout: photos in order on a square grid that snaps between zoom levels (`GallyLibrary`).
+- Image Loader: the shared image cache; consumers open channels and demand what their window needs.
+
+## Public Imports
+
+```ts
+import { GallyEngine, GallyImageLoader } from "gally"
+import { GallyCanvas, GallyHybridCanvas, GallyLibrary } from "gally/react"
+import "gally/styles.css"
+```
+
+## Basic React Example
+
+```tsx
+const photos = [
+  {
+    id: "photo-1",
+    width: 1200,
+    height: 1600,
+    src: "/photos/photo-1.webp",
+    alt: "Studio portrait",
+  },
+]
+
+export function Portfolio() {
+  return <GallyCanvas photos={photos} theme={{ background: "dotted" }} />
+}
+```
+
+## Hybrid Alpha Example
+
+```tsx
+export function Portfolio() {
+  return (
+    <GallyHybridCanvas
+      photos={photos}
+      overviewZoom={0.56}
+      detailZoom={0.72}
+      detailMaxTiles={120}
+      theme={{ background: "dotted" }}
+    />
+  )
+}
+```
+
+## Photo Library Example
+
+```tsx
+export function Library() {
+  return <GallyLibrary photos={photos} initialScroll="end" onOpenPhoto={({ index }) => openViewer(index)} />
+}
+```
+
+## What Gally Owns
+
+Gally owns camera movement, scene layout, visible/preload windows, pan/zoom interaction, image loading (one shared `GallyImageLoader`), source selection, canvas styling, and the renderer boundary.
+
+The consuming app owns routing, image hosting, lightbox UI, analytics, page chrome, and brand-specific effects.
+
+## Constraints
+
+- Keep Gally photo-first.
+- Do not add generic editor tools.
+- Do not add cursor morph behavior to the package.
+- Do not put app-specific UI inside the engine.
+- Keep docs honest: Gally is a built package, not a claim that infinite canvas was invented here.

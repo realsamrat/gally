@@ -1,0 +1,85 @@
+{
+  "name": "gally",
+  "version": "0.3.0-alpha.1",
+  "description": "Photo-first infinite canvas engine for image-heavy portfolios.",
+  "license": "MIT",
+  "author": "Samrat Chowdhury",
+  "homepage": "https://gallyjs.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/realsamrat/gally.git"
+  },
+  "bugs": "https://github.com/realsamrat/gally/issues",
+  "keywords": [
+    "infinite-canvas",
+    "photo-gallery",
+    "portfolio",
+    "react",
+    "image-grid"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./styles/gally.css"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./styles.css": {
+      "default": "./styles/gally.css"
+    }
+  },
+  "files": [
+    "dist",
+    "styles",
+    "docs",
+    "CONTEXT.md",
+    "AGENTS.md",
+    "llms.txt",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite",
+    "fixtures": "node scripts/fixtures.mjs",
+    "typecheck": "tsc --noEmit && tsc -p playground/tsconfig.json && tsc -p site/tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "build:playground": "vite build",
+    "deploy:playground": "node scripts/deploy-playground.mjs",
+    "dev:site": "vite --config vite.site.config.ts",
+    "build:site": "vite build --config vite.site.config.ts",
+    "deploy:site": "node scripts/deploy-site.mjs",
+    "bench:fps": "node scripts/bench-fps.mjs",
+    "bench:trace": "node scripts/bench-trace.mjs",
+    "check:renderer": "npm run build && node scripts/check-renderer.mjs",
+    "check:gestures": "node scripts/check-gestures.mjs",
+    "pinch-logs": "node scripts/pinch-logs.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/roboto-mono": "^5.3.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "allo-font": "^1.0.1",
+    "playwright-core": "^1.65.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^5.8.3",
+    "vite": "^8.3.8"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0 || >=19.0.0",
+    "react-dom": ">=18.0.0 || >=19.0.0"
+  }
+}

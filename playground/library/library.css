@@ -1,0 +1,88 @@
+.library-view {
+  --library-bg: #fff;
+  --library-text: #1d1d1f;
+  --library-chrome: rgb(255 255 255 / 0.86);
+  --library-edge: rgb(0 0 0 / 0.1);
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--library-bg);
+  color: var(--library-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  .library-view {
+    --library-bg: #161617;
+    --library-text: #f5f5f7;
+    --library-chrome: rgb(44 44 46 / 0.86);
+    --library-edge: rgb(255 255 255 / 0.12);
+  }
+}
+
+.library-view__tools {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  right: calc(env(safe-area-inset-right, 0px) + 16px);
+  display: flex;
+  border-radius: 999px;
+  background: var(--library-chrome);
+  box-shadow:
+    0 0 0 0.5px var(--library-edge),
+    0 6px 24px rgb(0 0 0 / 0.12);
+}
+
+.library-view__tools button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.library-view__tools button:focus-visible {
+  outline: 2px solid #0a84ff;
+  outline-offset: 2px;
+}
+
+.library-view__tools svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Pinch indicator (?debug=1): one short line, so it never covers the grid you're pinching. */
+.pinch-debug {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  z-index: 60;
+  max-width: calc(100vw - 16px);
+  height: 22px;
+  padding: 0 10px;
+  overflow: hidden;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font: 600 11px/22px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transform: translateX(-50%);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.pinch-debug[data-loop='1'] {
+  background: rgba(200, 30, 30, 0.85);
+}

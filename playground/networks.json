@@ -1,0 +1,5 @@
+{
+  "fast": { "rttMs": 20, "bitsPerSecond": 100e6 },
+  "4g": { "rttMs": 80, "bitsPerSecond": 9e6 },
+  "3g": { "rttMs": 300, "bitsPerSecond": 1.6e6 }
+}

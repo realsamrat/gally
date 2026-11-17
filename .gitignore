@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+coverage/
+.turbo/
+.next/
+public/fixtures/
+playground-dist/
+site-dist/
+.vercel/
+.vercel-playground/
+.vercel-site/
+.bench/

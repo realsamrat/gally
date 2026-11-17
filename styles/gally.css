@@ -1,0 +1,424 @@
+.gally {
+  --gally-background: #fff;
+  --gally-dot-color: rgba(0, 0, 0, 0.11);
+  --gally-hover-scale: 1.04;
+  --gally-pan-scale: 1;
+  --gally-pan-state: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* clip, not just hidden: focusing an off-screen tile mustn't scroll the canvas. */
+  overflow: hidden;
+  overflow: clip;
+  user-select: none;
+  background: var(--gally-background);
+  touch-action: none;
+}
+
+.gally--dotted {
+  background-color: var(--gally-background);
+  background-image: radial-gradient(var(--gally-dot-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.gally--none {
+  background: transparent;
+}
+
+.gally__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  transform-origin: 0 0;
+}
+
+/* While the camera moves, the layer keeps its raster and the compositor moves it; once it
+   settles, it redraws sharp at the new zoom. */
+.gally--moving:not(.gally--reraster) .gally__layer {
+  will-change: transform;
+}
+
+.gally__tile {
+  --gally-state-scale: 0.97;
+  --gally-hover-state: 1;
+  position: absolute;
+  display: block;
+  border: 0;
+  box-sizing: border-box;
+  opacity: 0;
+  background: transparent;
+  transform: scale(calc(var(--gally-state-scale) * var(--gally-hover-state) * var(--gally-pan-state)));
+  transform-origin: center center;
+  transition: opacity 240ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 220ms cubic-bezier(0.34, 1.45, 0.5, 1);
+  contain: layout paint style;
+}
+
+.gally__tile[data-gally-revealed="1"] {
+  --gally-state-scale: 1;
+  opacity: 1;
+}
+
+/* Hover only where pointers hover: iOS keeps :hover on a tapped tile. */
+@media (hover: hover) {
+  .gally__tile[data-gally-revealed="1"]:hover {
+    --gally-hover-state: var(--gally-hover-scale);
+    z-index: 2;
+  }
+}
+
+/*
+ * While zooming, tiles appear and settle without animating: an animating tile is its own
+ * compositor layer, and a far zoom-out brings in dozens at once (Safari stalls on that many).
+ */
+.gally--moving:not(.gally--panning) .gally__tile {
+  transition: none;
+}
+
+.gally--panning .gally__tile[data-gally-revealed="1"] {
+  --gally-hover-state: 1;
+  --gally-pan-state: var(--gally-pan-scale);
+}
+
+.gally__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition: box-shadow 160ms ease-out;
+  contain: paint;
+}
+
+.gally__frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .gally__tile[data-gally-revealed="1"]:hover .gally__frame {
+    box-shadow: 0 18px 45px -28px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.gally__controls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.gally__controls button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: #262626;
+  font: inherit;
+  cursor: pointer;
+}
+
+.gally__controls button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gally__tile {
+    transition: none;
+  }
+}
+
+.gally-hybrid {
+  --gally-hybrid-background: #fff;
+  --gally-hybrid-dot-color: rgba(0, 0, 0, 0.11);
+  --gally-hybrid-detail-opacity: 1;
+  --gally-hybrid-overview-opacity: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow: clip;
+  user-select: none;
+  background: var(--gally-hybrid-background);
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+.gally-hybrid--dotted {
+  background-color: var(--gally-hybrid-background);
+  background-image: radial-gradient(var(--gally-hybrid-dot-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.gally-hybrid--none {
+  background: transparent;
+}
+
+.gally-hybrid__overview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: var(--gally-hybrid-overview-opacity);
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.gally-hybrid__detail-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: var(--gally-hybrid-detail-opacity);
+  transform-origin: top left;
+  will-change: transform, opacity;
+}
+
+.gally-hybrid__detail-tile {
+  position: absolute;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 1;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: opacity 220ms ease-out,
+              transform 180ms cubic-bezier(0.34, 1.45, 0.5, 1);
+  contain: layout paint style;
+}
+
+@media (hover: hover) {
+  .gally-hybrid__detail-tile:hover {
+    z-index: 2;
+    transform: scale(1.04);
+  }
+}
+
+.gally-hybrid__detail-tile[data-gally-selected="1"] {
+  z-index: 3;
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.gally-hybrid--spotlight .gally-hybrid__detail-tile[data-gally-selected="1"] {
+  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.14);
+}
+
+.gally-hybrid--spotlight .gally-hybrid__detail-tile:not([data-gally-spotlight-selected="1"]) {
+  opacity: 0.36;
+}
+
+.gally-hybrid--spotlight .gally-hybrid__detail-tile[data-gally-spotlight-selected="1"] {
+  opacity: 1;
+}
+
+.gally-hybrid--zooming .gally-hybrid__detail-tile {
+  transition: none;
+}
+
+.gally-hybrid--panning .gally-hybrid__detail-tile {
+  transform: scale(0.98);
+}
+
+.gally-hybrid__detail-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.gally-hybrid__controls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.gally-hybrid__controls button {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #262626;
+  font: inherit;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.gally-hybrid__controls button svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.gally-hybrid__controls button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gally-hybrid__detail-tile {
+    transition: none;
+  }
+}
+
+/* Library ------------------------------------------------------------------------------------- */
+
+.gally-library {
+  --gally-library-background: transparent;
+  --gally-library-placeholder: rgba(128, 128, 128, 0.16);
+  --gally-library-accent: #0a84ff;
+  --gally-library-ring-width: 3px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: none;
+  background: var(--gally-library-background);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gally-library__scroller {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  /* Rows are replaced as the grid changes level; the browser mustn't move the scroll to compensate. */
+  overflow-anchor: none;
+}
+
+.gally-library__pinch,
+.gally-library__content {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+.gally-library__bands canvas {
+  position: absolute;
+  left: 0;
+  display: block;
+}
+
+.gally-library__grid {
+  display: grid;
+  align-content: start;
+  box-sizing: border-box;
+}
+
+.gally-library__tile {
+  position: relative;
+  overflow: hidden;
+  background: var(--gally-library-placeholder);
+}
+
+.gally-library__tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.gally-library--aspect .gally-library__tile:has(img) {
+  background: transparent;
+}
+
+.gally-library--aspect .gally-library__tile img {
+  object-fit: contain;
+}
+
+.gally-library__tile[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 var(--gally-library-ring-width) var(--gally-library-accent);
+}
+
+.gally-library__ghost {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.gally-library__ghost-zoom {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+.gally-library__snapshot {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * A pinch's copy of the outgoing grid: its content (copied tiles or the canvas bands) sits in
+ * content coordinates under one camera transform, over an opaque backdrop behind the rows it
+ * shows, so fading it gives the two grids' weighted mix there, gaps included.
+ */
+.gally-library__ghost--pinch {
+  will-change: opacity;
+}
+
+.gally-library__ghost-backdrop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--gally-library-background);
+}
+
+.gally-library__ghost--pinch .gally-library__ghost-zoom {
+  inset: 0 auto auto 0;
+  will-change: transform;
+}
+
+/* The outgoing canvas snapshot (inside the ghost's zoom layer): drawn at device pixels, shown at CSS pixels. */
+.gally-library__ghost-zoom > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gally-library__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"default-loader.js","sourceRoot":"","sources":["../../src/react/default-loader.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAA;AAErD,IAAI,MAAoC,CAAA;AAExC;;;;GAIG;AACH,MAAM,UAAU,mBAAmB;IACjC,OAAO,CAAC,MAAM,KAAK,IAAI,gBAAgB,CAAC,EAAE,IAAI,EAAE,MAAM,EAAE,CAAC,CAAC,CAAA;AAC5D,CAAC"}
