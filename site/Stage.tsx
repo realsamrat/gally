@@ -16,11 +16,9 @@ export type StatRow = { label: string; value: string; tone?: 'dom' | 'canvas' }
 
 export type StageRuler = {
   label: string
-  lo: string
-  hi: string
   /** Position, 0 to 1. */
   value: number
-  /** The value in words. */
+  /** The value as shown. */
   text: string
   /** Stops, for a ruler that snaps. */
   steps?: number
@@ -383,8 +381,6 @@ function LiveRuler({ store, onChange }: { store: Store; onChange: (value: number
   return (
     <Ruler
       label={ruler.label}
-      lo={ruler.lo}
-      hi={ruler.hi}
       value={scrub ?? ruler.value}
       text={ruler.text}
       live={scrub === null}

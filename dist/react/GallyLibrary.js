@@ -21,14 +21,16 @@ const TUNING = {
     flickScreensPerSecond: 2.5,
     /** A trackpad pinch ends when its wheel events stop for this long. */
     wheelPinchEndMs: 140,
-    wheelPinchSensitivity: 0.012,
+    /** Grid zoom (log scale) per wheel unit of a trackpad pinch. */
+    wheelPinchSensitivity: 0.015,
     /** While pinching, rows rendered beyond the screen, as a share of it on each side, for the grid to shrink into. */
     pinchCoverage: 0.75,
     /** Release speeds carried into the spring, at most: zoom (log scale per second) and pan (px/s). */
     pinchMaxZoomSpeed: 8,
     pinchMaxPanSpeed: 3000,
-    /** A release lands on the nearer level as judged this far ahead (seconds of its speed). */
-    pinchProjectionS: 0.12,
+    /** A release lands on the level it's heading for from this share of the way there, judged this far ahead (seconds of its speed). */
+    pinchLandAt: 0.4,
+    pinchProjectionS: 0.16,
     /** The spring overshoots a level's size by at most this share. */
     pinchMaxOvershoot: 0.04,
     /** An outgoing copy that's all but dissolved fades out this fast. */
@@ -1159,12 +1161,12 @@ function GallyLibraryInner(props, ref) {
             const zSpeed = cancelled ? 0 : clamp(fitSpeed(g.samples.map((s) => ({ t: s.t, v: s.z })), now), -TUNING.pinchMaxZoomSpeed, TUNING.pinchMaxZoomSpeed) * g.slope;
             const xSpeed = cancelled ? 0 : clamp(fitSpeed(g.samples.map((s) => ({ t: s.t, v: s.x })), now), -TUNING.pinchMaxPanSpeed, TUNING.pinchMaxPanSpeed);
             const ySpeed = cancelled ? 0 : clamp(fitSpeed(g.samples.map((s) => ({ t: s.t, v: s.y })), now), -TUNING.pinchMaxPanSpeed, TUNING.pinchMaxPanSpeed);
-            // Where it lands: the nearer of the two levels it's between, judged a moment ahead.
+            // Where it lands: the level it's heading for once it's far enough there, judged a moment ahead.
             let target = base;
             if (pairTo >= 0) {
                 const step = stops[pairTo].z - stops[base].z;
                 const ahead = pairP + (zSpeed * TUNING.pinchProjectionS) / step;
-                if (ahead >= 0.5)
+                if (ahead >= TUNING.pinchLandAt)
                     target = pairTo;
             }
             // A level still rendering that it won't land on: keep the grid that's there.

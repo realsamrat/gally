@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 /** The primary pointer is a finger: demos open full screen instead of taking gestures inline. */
 export function useCoarsePointer() {
@@ -53,47 +53,57 @@ export function Reveal({ children, as: Tag = 'div', className, delay = 0 }: { ch
 }
 
 /**
- * A scrubber drawn as a ruler: end labels, tick marks and a playhead. Positions run 0 to 1; the
- * caller maps them to its own scale. A real range input sits over the track, so it drags, takes
- * arrow keys and reads to assistive tech like any slider.
+ * A scrubber drawn as a ruler: its name, tick marks that light up around a playhead, and its value.
+ * Positions run 0 to 1; the caller maps them to its own scale. A real range input sits over the
+ * track, so it drags, takes arrow keys and reads to assistive tech like any slider.
  */
 export function Ruler({
   label,
-  lo,
-  hi,
   value,
   text,
+  chars,
   onChange,
   steps,
   split,
   live = false,
 }: {
   label: string
-  lo: string
-  hi: string
   value: number
-  /** The value in words, e.g. "1.20×". */
+  /** The value as shown and read out, e.g. "1.20×". */
   text: string
+  /** Room for the longest value, in digits, when it's more than five: the track mustn't resize as the value changes. */
+  chars?: number
   onChange: (value: number) => void
   /** A discrete ruler with this many stops, instead of a continuous one. */
   steps?: number
-  /** Where the track changes from canvas (left) to elements (right), 0 to 1. */
+  /** Where the ticks change from canvas (left) to elements (right), 0 to 1. */
   split?: number
   /** The value also changes by itself (someone pinching), so the playhead glides between readings. */
   live?: boolean
 }) {
-  const ticks = steps ?? 41
   const p = Math.max(0, Math.min(1, value))
+  const ticks = useMemo(() => {
+    const count = steps ?? 41
+    return Array.from({ length: count }, (_, index) => (
+      <i key={index} data-major={steps || index % 10 === 0 ? '' : undefined} data-zone={split === undefined ? undefined : index / (count - 1) < split ? 'canvas' : 'dom'} />
+    ))
+  }, [steps, split])
   return (
-    <div className="ruler" data-live={live ? '' : undefined} style={{ '--p': p, ...(split === undefined ? {} : { '--split': split }) } as React.CSSProperties}>
-      <span>{lo}</span>
+    <div
+      className="ruler"
+      data-live={live ? '' : undefined}
+      data-steps={steps ? '' : undefined}
+      style={{ '--p': p, ...(chars === undefined ? {} : { '--chars': chars }) } as React.CSSProperties}
+    >
+      <span>{label}</span>
       <div className="ruler__track">
         <div className="ruler__ticks" aria-hidden="true">
-          {Array.from({ length: ticks }, (_, index) => (
-            <i key={index} data-major={steps || index % 10 === 0 ? '' : undefined} />
-          ))}
+          {ticks}
         </div>
-        {split !== undefined && <i className="ruler__zones" aria-hidden="true" />}
+        {/* The same ticks again, bright, showing only around the playhead. */}
+        <div className="ruler__ticks" data-lit="" aria-hidden="true">
+          {ticks}
+        </div>
         <i className="ruler__head" aria-hidden="true" />
         <input
           type="range"
@@ -106,7 +116,7 @@ export function Ruler({
           onChange={(event) => onChange(Number(event.target.value))}
         />
       </div>
-      <span>{hi}</span>
+      <span className="ruler__value">{text}</span>
     </div>
   )
 }
@@ -143,6 +153,7 @@ export function Option({ label, options }: { label: string; options: Choice[] })
   return (
     <div className="option" role="group" aria-label={label}>
       <span>{label}</span>
+      <hr />
       <div ref={ref}>
         {thumb && <i data-settled={settled ? '' : undefined} style={{ width: thumb.width, transform: `translateX(${thumb.left}px)` }} />}
         {options.map((option) => (

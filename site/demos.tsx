@@ -88,8 +88,6 @@ function zoomRuler(handle: GallyCanvasHandle, zoom: number, min: number, max: nu
   const position = (value: number) => Math.log(value / min) / Math.log(max / min)
   return {
     label: 'Zoom',
-    lo: zoomText(min),
-    hi: zoomText(max),
     value: position(zoom),
     text: zoomText(zoom),
     ...(splitAt ? { split: position(splitAt) } : {}),
@@ -224,8 +222,6 @@ export function HybridDemo() {
 
 /* Library ------------------------------------------------------------------------------------ */
 
-const columnsText = (columns: number) => `${columns} ${columns === 1 ? 'column' : 'columns'}`
-
 const LibrarySurface = memo(function LibrarySurface({
   handle,
   photos,
@@ -275,11 +271,9 @@ export function LibraryDemo() {
       ],
       ruler: {
         label: 'Columns',
-        lo: columnsText(columns(count - 1)),
-        hi: columnsText(columns(0)),
         steps: count,
         value: (count - 1 - stats.level) / (count - 1),
-        text: columnsText(columns(stats.level)),
+        text: `${columns(stats.level)}`,
         set: (p) => {
           const level = Math.round((1 - p) * (count - 1))
           if (level !== handle.getStats().level) handle.zoomToLevel(level)

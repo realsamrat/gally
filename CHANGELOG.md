@@ -13,6 +13,7 @@ Changes since `0.3.0-alpha.1`.
 
 ### Changed
 
+- `GallyLibrary`: a pinch lands on the level it is heading for from 40% of the way there instead of half, and a trackpad pinch moves the grid a little further for the same movement.
 - `GallyCanvas` mounts only the tiles near the screen, so its `.gally__scale-layer`, `.gally__surface`, `.gally__strip` and `.gally__copy` elements are gone; tiles sit in one `.gally__layer`.
 - `layout.horizontalCopies` and `layout.verticalCopies` are ignored: the layout wraps forever.
 - The canvases' default loader is blob mode. Blob-mode images show from `blob:` URLs, so a Content Security Policy needs `img-src blob:`, or pass an element-mode loader.
