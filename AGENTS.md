@@ -95,6 +95,7 @@ Camera math, culling, preloading, and level-of-detail rendering are established 
 - README explains `GallyCanvas` vs `GallyHybridCanvas`.
 - `docs/library.md` explains `GallyLibrary`.
 - `CHANGELOG.md` lists what changed.
+- `CONTRIBUTING.md` and the templates under `.github` are current.
 - The demo site builds (`npm run build:site`).
 - `CONTEXT.md` defines domain language.
 - `docs/architecture.md` explains renderer boundaries.

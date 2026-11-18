@@ -1,0 +1,104 @@
+name: Bug report
+description: Something is broken, feels wrong, or drops frames.
+title: "[Bug]: "
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. One problem per report, please.
+        Ideas and feature requests go in [Discussions](https://github.com/realsamrat/gally/discussions/categories/ideas).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is it?
+      options:
+        - GallyCanvas
+        - GallyHybridCanvas
+        - GallyLibrary
+        - Image loading
+        - Demo site (gallyjs.vercel.app)
+        - Playground or benchmarks
+        - Docs
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem?
+      options:
+        - It's broken or shows the wrong thing
+        - A gesture or animation feels wrong
+        - It's slow or drops frames
+        - Photos load late, blurry or not at all
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The shortest path that shows it. A link to the demo site or a small repo helps.
+      placeholder: |
+        1. Open https://gallyjs.vercel.app
+        2. In the Library demo, pinch out to the densest level
+        3. Pinch back in quickly
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: A short screen recording says more than words for anything about motion. Drag it in here.
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: iPhone 15, Safari. Or MacBook Pro, Chrome, with their versions.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: input
+    attributes:
+      label: Input
+      multiple: true
+      options:
+        - Touch
+        - Trackpad
+        - Mouse
+        - Keyboard
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Gally version or commit
+      description: The version in package.json, a commit, or "the demo site".
+      placeholder: 0.3.0-alpha.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: Console errors, how many photos, how they are hosted, a performance trace.

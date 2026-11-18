@@ -200,6 +200,10 @@ The package publishes ESM from `dist`. If files under `src` change, run `npm run
 
 Coding agents and LLMs: read `AGENTS.md`, `CONTEXT.md` and `llms.txt` first.
 
+## Contributing
+
+Bug reports, device testing, fixes and docs are all welcome. [CONTRIBUTING.md](CONTRIBUTING.md) says what fits, how to set up, and what a pull request needs. Ideas and questions go in [Discussions](https://github.com/realsamrat/gally/discussions).
+
 ## License
 
 [MIT](LICENSE)

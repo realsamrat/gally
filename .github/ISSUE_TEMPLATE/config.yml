@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Idea or feature request
+    url: https://github.com/realsamrat/gally/discussions/categories/ideas
+    about: Suggest a new prop, layout or behaviour in Discussions, so it can be talked through first.
+  - name: Question
+    url: https://github.com/realsamrat/gally/discussions/categories/q-a
+    about: Ask how to use Gally in your project.
