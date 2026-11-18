@@ -358,8 +358,6 @@ export function WindowFigure() {
       <div className="fig__controls">
         <Ruler
           label="Zoom"
-          lo={`${WINDOW_ZOOM.min.toFixed(2)}×`}
-          hi={`${WINDOW_ZOOM.max.toFixed(2)}×`}
           value={(zoom - WINDOW_ZOOM.min) / (WINDOW_ZOOM.max - WINDOW_ZOOM.min)}
           text={`${zoom.toFixed(2)}×`}
           onChange={setZoomAt}
@@ -411,7 +409,7 @@ export function LodFigure() {
         </div>
       </div>
       <div className="fig__controls">
-        <Ruler label="Size on screen" lo={`${LOD_MIN} px`} hi={`${max} px`} value={t} text={`${width} pixels wide`} onChange={setT} />
+        <Ruler label="Size on screen" value={t} text={`${width} px`} chars={7} onChange={setT} />
         <Cells label="Image sizes" cells={LOD_KEYS.map((size) => ({ name: size, detail: `${SOURCE_SIZES[size]} px`, on: size === key }))} />
       </div>
     </Figure>
@@ -456,8 +454,6 @@ export function RendererFigure() {
       <div className="fig__controls">
         <Ruler
           label="Zoom"
-          lo={`${SHEET_ZOOM.min.toFixed(2)}×`}
-          hi={`${SHEET_ZOOM.max.toFixed(2)}×`}
           value={position(zoom)}
           text={`${zoom.toFixed(2)}×`}
           split={position(SWITCH_ZOOM)}

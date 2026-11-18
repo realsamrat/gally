@@ -22,7 +22,7 @@
   --canvas: #ff9233;
   --out: cubic-bezier(0.2, 0, 0, 1);
   --col: 640px;
-  --wide: 960px;
+  --wide: 880px;
   --pad: max(20px, env(safe-area-inset-left), env(safe-area-inset-right));
   --mono: 'Roboto Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 }
@@ -149,26 +149,16 @@ section > .code + p {
 }
 
 h2 {
-  display: flex;
-  align-items: center;
-  gap: 14px;
   margin: 76px 0 12px;
   font-size: inherit;
   font-weight: 560;
   color: var(--ink);
 }
 
-h2::after {
-  content: '';
-  flex: 1;
-  order: 1;
-  height: 1px;
-  background: var(--rule);
-}
-
+/* The component's name, under the heading. */
 h2 code {
-  order: 2;
-  font: 400 12px/1 var(--mono);
+  display: block;
+  font: 400 12px/18px var(--mono);
   color: var(--dim);
 }
 
@@ -284,27 +274,51 @@ section.enter {
 
 /* Controls: one family of cards, 40 px tall ------------------------------------------------------ */
 
-/* A scrubber drawn as a ruler. */
+/* A scrubber drawn as a ruler: its name, tick marks that light up around the playhead, its value. */
+
+/* Registered, so the playhead and the lit ticks can glide to a new position together. */
+@property --p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .ruler {
+  --surface: var(--card);
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   height: 40px;
   min-width: 0;
   padding: 0 12px;
   border-radius: 10px;
-  background: var(--card);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--dim);
   font-size: 12px;
   line-height: 16px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
+/* Following a pinch, it glides between readings; a ruler with stops eases from one to the next. */
+.ruler[data-live] {
+  transition: --p 0.1s linear;
+}
+
+.ruler[data-steps] {
+  transition: --p 0.28s var(--out);
+}
+
 .ruler:has(input:focus-visible) {
   outline: 2px solid var(--dom);
   outline-offset: 2px;
+}
+
+.ruler__value {
+  min-width: calc(var(--chars, 5) * 1ch);
+  color: var(--ink);
+  text-align: right;
 }
 
 .ruler__track {
@@ -318,62 +332,64 @@ section.enter {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  padding-bottom: 12px;
 }
 
 .ruler__ticks i {
   width: 1px;
   height: 6px;
-  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  background: color-mix(in srgb, var(--ink) 15%, transparent);
 }
 
 .ruler__ticks i[data-major] {
-  height: 11px;
-  background: color-mix(in srgb, var(--ink) 36%, transparent);
+  height: 12px;
+  background: color-mix(in srgb, var(--ink) 30%, transparent);
 }
 
-/* Where each renderer draws: canvas up to the split, elements after it. */
-.ruler__zones {
-  position: absolute;
-  right: 0;
-  bottom: 6px;
-  left: 0;
-  height: 2px;
-  border-radius: 1px;
-  background: linear-gradient(to right, var(--canvas) calc(var(--split) * 100%), var(--dom) 0);
+/* Where each renderer draws: canvas ticks up to the switch, element ticks after it. */
+.ruler__ticks i[data-zone='canvas'] {
+  background: color-mix(in srgb, var(--canvas) 50%, transparent);
 }
 
+.ruler__ticks i[data-zone='dom'] {
+  background: color-mix(in srgb, var(--dom) 55%, transparent);
+}
+
+.ruler__ticks[data-lit] {
+  --near: 64px;
+  -webkit-mask-image: linear-gradient(to right, transparent calc(var(--p) * 100% - var(--near)), #000 calc(var(--p) * 100%), transparent calc(var(--p) * 100% + var(--near)));
+  mask-image: linear-gradient(to right, transparent calc(var(--p) * 100% - var(--near)), #000 calc(var(--p) * 100%), transparent calc(var(--p) * 100% + var(--near)));
+}
+
+.ruler__ticks[data-lit] i {
+  background: var(--ink);
+}
+
+.ruler__ticks[data-lit] i[data-zone='canvas'] {
+  background: var(--canvas);
+}
+
+.ruler__ticks[data-lit] i[data-zone='dom'] {
+  background: var(--dom);
+}
+
+/* The playhead, with a gap of the card's colour so it stands clear of the ticks. */
 .ruler__head {
   position: absolute;
   top: 9px;
-  bottom: 7px;
+  bottom: 9px;
   left: calc(var(--p) * 100%);
-  width: 2px;
-  margin-left: -1px;
-  border-radius: 1px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
   background: var(--ink);
-}
-
-.ruler__head::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -3px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ink);
+  box-shadow: 0 0 0 3px var(--surface);
   transition: scale 0.15s var(--out);
 }
 
-.ruler__track:active .ruler__head::before {
-  scale: 1.35;
-}
-
-.ruler[data-live] .ruler__head {
-  transition: left 0.1s linear;
+.ruler__track:active .ruler__head {
+  scale: 1 1.18;
 }
 
 /* The real slider, invisible over the track. Its thumb is 20 px, so it overhangs 10 px a side and
@@ -444,10 +460,24 @@ section.enter {
   padding: 0 6px 0 12px;
   border-radius: 10px;
   background: var(--card);
-  color: var(--ink);
-  font-size: 14px;
+  color: var(--dim);
+  font-size: 13px;
   line-height: 20px;
   white-space: nowrap;
+}
+
+/* A hairline between the name and its options. */
+.option hr {
+  flex: none;
+  width: 1px;
+  height: 16px;
+  margin: 0;
+  border: 0;
+  background: var(--rule);
+}
+
+.option span {
+  flex: 1;
 }
 
 .option div {
@@ -710,7 +740,7 @@ section.enter {
 .stage__slot {
   position: relative;
   grid-area: 1 / 1;
-  min-height: clamp(440px, 64svh, 600px);
+  min-height: clamp(400px, 56svh, 520px);
 }
 
 .stage__under {
@@ -875,7 +905,10 @@ section.enter {
   translate: -50% 0;
 }
 
-.stage__dock .ruler,
+.stage__dock .ruler {
+  --surface: var(--chrome);
+}
+
 .stage__dock .option {
   background: var(--chrome);
 }
@@ -1422,10 +1455,6 @@ section.enter {
 /* Colophon ------------------------------------------------------------------------------------- */
 
 .colophon {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 6px 24px;
   margin-top: 88px;
   padding-top: 20px;
   border-top: 1px solid var(--rule);
@@ -1433,10 +1462,78 @@ section.enter {
   font-size: 14px;
 }
 
-.colophon p:first-child {
+/* Who made it on the left, the release on the right. */
+.colophon__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.colophon__top p {
   display: flex;
   gap: 16px;
   font-variant-numeric: tabular-nums;
+}
+
+/* A pill: the avatar, and the name beside it, as one link. */
+.byline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 13px 0 6px;
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: 0 0 0 1px var(--ring);
+  color: var(--soft);
+  font-size: 13px;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s var(--out),
+    scale 0.15s var(--out);
+}
+
+.byline b {
+  color: var(--ink);
+  font-weight: inherit;
+}
+
+.byline img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.byline:active {
+  scale: 0.97;
+}
+
+@media (hover: hover) {
+  .byline:hover {
+    background: var(--card-hover);
+  }
+}
+
+/* Credits: what each part of the page is owed to. */
+.colophon dl {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: space-between;
+  gap: 10px 24px;
+  margin-top: 28px;
+}
+
+.colophon dt {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.colophon dd {
+  color: var(--soft);
 }
 
 /* Small screens -------------------------------------------------------------------------------- */
@@ -1448,7 +1545,7 @@ section.enter {
   }
 
   .stage__slot {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     min-height: 360px;
   }
 
@@ -1470,9 +1567,11 @@ section.enter {
     margin-top: 60px;
   }
 
+  /* A little taller than wide, up to the desktop height. A height, not an aspect ratio with a
+     maximum: that would narrow the box once the maximum applies. */
   .stage__slot {
-    aspect-ratio: 4 / 5;
-    max-height: 68svh;
+    aspect-ratio: auto;
+    height: min(var(--w) * 10 / 9, 520px, 60svh);
   }
 
   .stage__under {
@@ -1497,6 +1596,23 @@ section.enter {
 @media (max-width: 560px) {
   .ruler {
     gap: 10px;
+  }
+
+  /* Credits stack, each name beside its label. */
+  .colophon dl {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .colophon dl div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .colophon dt {
+    font-size: 13px;
   }
 
   .cells li {
@@ -1546,7 +1662,9 @@ section.enter {
     transform: none;
   }
 
-  .option i[data-settled] {
+  .option i[data-settled],
+  .ruler[data-live],
+  .ruler[data-steps] {
     transition: none;
   }
 
@@ -1557,6 +1675,7 @@ section.enter {
 
   .tool,
   .key,
+  .byline,
   .round,
   .option button,
   .stage__enter span,

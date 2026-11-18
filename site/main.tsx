@@ -229,14 +229,39 @@ function Page() {
       </Reveal>
 
       <Reveal as="footer" className="colophon">
-        <p>
-          <a href={REPO}>GitHub</a>
-          <span>v{pkg.version}</span>
-          <span>MIT</span>
-        </p>
-        <p>
-          Set in <a href="https://allo.joshpuckett.me">Allo</a>. Photos from <a href="https://picsum.photos">Lorem Picsum</a>.
-        </p>
+        <div className="colophon__top">
+          <a className="byline" href="https://x.com/realsamratc">
+            <img src="/samrat.jpg" alt="" width="20" height="20" />
+            <span>
+              Made by <b>Samrat Chowdhury</b>
+            </span>
+          </a>
+          <p>
+            <a href={REPO}>GitHub</a>
+            <span>v{pkg.version}</span>
+            <span>MIT</span>
+          </p>
+        </div>
+        <dl>
+          <div>
+            <dt>Page design</dt>
+            <dd>
+              Inspired by <a href="https://x.com/raphaelsalaja">Raphael Salaja</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Typeface</dt>
+            <dd>
+              <a href="https://allo.joshpuckett.me">Allo</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Photos</dt>
+            <dd>
+              <a href="https://picsum.photos">Lorem Picsum</a>
+            </dd>
+          </div>
+        </dl>
       </Reveal>
     </main>
   )

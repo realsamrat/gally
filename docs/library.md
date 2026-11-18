@@ -48,7 +48,7 @@ Zoom changes level around the photo under the pointer, so that photo stays where
 
 A pinch works as in a phone's photo library. The grid follows the fingers' spread and centre. Heading for another level, that level's grid takes over underneath a copy of the current one, placed so the photos show at the same size and the point under the fingers keeps its row. The two dissolve as the pinch progresses, not on a timer, so pinching back reverses the dissolve.
 
-Grids stay within their edges as they scale, like a zooming scroll view: no gap opens above the first row or beside the grid. Letting go lands on the nearer of the two levels, judged a moment ahead by the fingers' speed, and springs scale and position together (critically damped, about 12.5 rad/s, carrying the fingers' speed). Past the closest level the grid stretches up to about 1.6×, past the densest it gives a little, and both spring back.
+Grids stay within their edges as they scale, like a zooming scroll view: no gap opens above the first row or beside the grid. Letting go lands on the level the pinch was heading for once it is 40% of the way there, judged a moment ahead by the fingers' speed, and otherwise returns to the level it left. Either way it springs scale and position together (critically damped, about 12.5 rad/s, carrying the fingers' speed). Past the closest level the grid stretches up to about 1.6×, past the densest it gives a little, and both spring back.
 
 Each frame only writes transforms and an opacity. The copy reuses what is already drawn, and the new level renders without blocking the fingers.
 
