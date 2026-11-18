@@ -82,7 +82,7 @@ There is one maintainer, so a review can take a few days. A PR that follows this
 
 ## Conduct
 
-Be kind and assume good faith. Critique the code, not the person. Harassment, insults and spam get removed, and repeat offenders get blocked.
+Be kind and assume good faith. Critique the code, not the person. The [code of conduct](CODE_OF_CONDUCT.md) has the rest.
 
 ## Security
 
