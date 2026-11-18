@@ -14,3 +14,4 @@ site-dist/
 .vercel-playground/
 .vercel-site/
 .bench/
+.promo/
