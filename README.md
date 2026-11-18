@@ -180,6 +180,7 @@ dist/         build output, committed so installs from GitHub work
 site/         the demo site (gallyjs.vercel.app)
 playground/   the benchmark playground: both canvases and the library, with a benchmark panel
 scripts/      sample photos, benchmarks, checks and deploys
+.agents/      how-to guides for coding agents working on this repo
 docs/         architecture, the library, decisions, benchmarks, release checklist
 ```
 

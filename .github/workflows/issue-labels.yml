@@ -1,0 +1,39 @@
+name: Issue labels
+
+# Reads the answers in a new bug report and adds the matching area labels.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  label:
+    name: Label from the form
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const body = context.payload.issue.body ?? "";
+            // The form renders each question as a "### Question" heading with the answer under it.
+            const answer = (question) => {
+              const match = body.match(new RegExp(`### ${question}\\s+([^\\n]+)`));
+              return match ? match[1].trim() : "";
+            };
+            const where = answer("Where is it\\?");
+            const kind = answer("What kind of problem\\?");
+
+            const labels = new Set();
+            if (kind.startsWith("A gesture or animation")) labels.add("gestures");
+            if (kind.startsWith("It's slow") || kind.startsWith("Photos load")) labels.add("performance");
+            if (where === "Docs") labels.add("documentation");
+
+            if (labels.size) {
+              await github.rest.issues.addLabels({ ...context.repo, issue_number: context.payload.issue.number, labels: [...labels] });
+            }
+            core.info(`where: ${where || "-"}, kind: ${kind || "-"}, labels: ${[...labels].join(", ") || "none"}`);

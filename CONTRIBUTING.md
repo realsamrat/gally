@@ -76,6 +76,8 @@ npm run build        # the package, into dist
 
 AI-assisted PRs are welcome. Say which model and tool did the work, and test what it wrote yourself. You are responsible for the change, not the model.
 
+If you work with a coding agent, point it at `AGENTS.md`. The skills in `.agents/skills` tell it how to test a change here and how to revise a pull request after review.
+
 ## Review
 
 There is one maintainer, so a review can take a few days. A PR that follows this guide can still be declined if it doesn't fit where the project is going. That's about scope, not about you, and you'll get the reason.
